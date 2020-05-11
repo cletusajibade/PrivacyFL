@@ -12,11 +12,11 @@ https://arxiv.org/abs/2002.08423
 """
 
 """Imports"""
-from datetime import timedelta
-import random
 
 """Simulation Parameters"""
 # NUM_CLIENTS: Number of client agents
+from datetime import timedelta
+import random
 NUM_CLIENTS = 3
 client_names = ['client_agent' + str(i) for i in range(NUM_CLIENTS)]
 # NUM_SERVERS: More than one server will require additional coding to specify each server's behavior in the simulation
@@ -25,7 +25,8 @@ NUM_SERVERS = 1
 ITERATIONS = 10
 # LEN_PER_ITERATION: How many datapoints each client gets per iteration (starts at 0). On iteration i, each client has (i+1) * LEN_PER_ITERATION samples
 len_per_iteration = 50  # using equal size datasets for each client in this example
-LENS_PER_ITERATION = {client_name: len_per_iteration for client_name in client_names}
+LENS_PER_ITERATION = {
+    client_name: len_per_iteration for client_name in client_names}
 
 # LEN_TEST: Length of test dataset. Note whole dataset length is 1797
 LEN_TEST = 300
@@ -46,13 +47,14 @@ USE_SECURITY = True
 # USE_DP_PRIVACY: Whether to implement differential privacy functionality. Defaults to laplacian noise.
 USE_DP_PRIVACY = False
 # SUBTRACT_DP_NOISE: Use more advanced version of protocol which has each client subtract the DP noise it added from the federated model it receives
-SUBTRACT_DP_NOISE = False  # Subtract your own DP noise from federated model to increase accuracy
+# Subtract your own DP noise from federated model to increase accuracy
+SUBTRACT_DP_NOISE = False
 assert (SUBTRACT_DP_NOISE == False or (
-            SUBTRACT_DP_NOISE == True and USE_DP_PRIVACY == True))  # Only subtract DP Noise if adding it to begin with
+    SUBTRACT_DP_NOISE == True and USE_DP_PRIVACY == True))  # Only subtract DP Noise if adding it to begin with
 
-INTERCEPTS_DP_NOISE = False  # Add DP noise to intercepts (for Logistic Regression example)
+# Add DP noise to intercepts (for Logistic Regression example)
+INTERCEPTS_DP_NOISE = False
 # DP_ALGORITHM: either Laplace or Gamma. Can easily add more in client agent's code
-
 DP_ALGORITHM = "Gamma"
 
 # DP Privacy Parameters
@@ -79,11 +81,13 @@ if 'server_agent0' not in LATENCY_DICT.keys():
 
 for client_name in client_names:
     if client_name not in LATENCY_DICT.keys():
-        LATENCY_DICT[client_name] = {client_name2: timedelta(seconds=0.1) for client_name2 in client_names}
+        LATENCY_DICT[client_name] = {client_name2: timedelta(
+            seconds=0.1) for client_name2 in client_names}
     LATENCY_DICT[client_name]['server_agent0'] = timedelta(seconds=0.1)
     LATENCY_DICT['server_agent0'][client_name] = timedelta(seconds=0.1)
 
-LATENCY_DICT['client_agent1'] = {client_name: timedelta(seconds=2.0) for client_name in client_names}
+LATENCY_DICT['client_agent1'] = {client_name: timedelta(
+    seconds=2.0) for client_name in client_names}
 LATENCY_DICT['client_agent1']['server_agent0'] = timedelta(seconds=2.0)
 LATENCY_DICT['server_agent0']['client_agent1'] = timedelta(seconds=2.0)
 
@@ -97,4 +101,5 @@ Additional Constants: likely won't need modification
 LOG_MAX_ITER = 10
 random.seed(0)
 # RANDOM_SEEDS: required for reproducibility of simulation. Seeds every iteration of the training for each client
-RANDOM_SEEDS = {client_name: list(random.sample(range(0, 1000000), 100)) for client_name in client_names}
+RANDOM_SEEDS = {client_name: list(random.sample(
+    range(0, 1000000), 100)) for client_name in client_names}
