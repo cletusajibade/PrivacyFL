@@ -8,6 +8,14 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+import random
+import warnings
+import datetime
+import config
+import numpy as np
+
+from initializer import Initializer
+
 
 class Ui_MainWindow(object):
 
@@ -262,6 +270,18 @@ class Ui_MainWindow(object):
         self.actionExit_Application.setText(
             _translate("MainWindow", "Exit Application"))
         self.actionExit_2.setText(_translate("MainWindow", "Exit"))
+
+    def runSim(sef):
+        random.seed(0)
+        np.random.seed(0)
+        initializer = Initializer(num_clients=config.NUM_CLIENTS, iterations=config.ITERATIONS,
+                                  num_servers=config.NUM_SERVERS)
+        # can use any amount of iterations less than config.ITERATIONS but the
+        #  initializer has only given each client config.ITERATIONS datasets for training.
+        a = datetime.datetime.now()
+        initializer.run_simulation(config.ITERATIONS,
+                                   server_agent_name='server_agent0')
+        b = datetime.datetime.now()
 
 
 if __name__ == "__main__":
