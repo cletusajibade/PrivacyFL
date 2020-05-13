@@ -249,7 +249,7 @@ class AppMainWindow(QMainWindow):
         random.seed(0)
         np.random.seed(0)
         initializer = Initializer(num_clients=config.NUM_CLIENTS, iterations=config.ITERATIONS,
-                                  num_servers=config.NUM_SERVERS)
+                                  num_servers=config.NUM_SERVERS, method = config.METHOD)
         # can use any amount of iterations less than config.ITERATIONS but the
         # initializer has only given each client config.ITERATIONS datasets for training.
         a = datetime.datetime.now()
