@@ -24,8 +24,7 @@ NUM_SERVERS = 1
 # ITERATIONS: How many iterations to run simulation for
 ITERATIONS = 10
 # LEN_PER_ITERATION: How many datapoints each client gets per iteration (starts at 0). On iteration i, each client has (i+1) * LEN_PER_ITERATION samples
-# using equal size datasets for each client in this example
-len_per_iteration = 50
+len_per_iteration = 50  # using equal size datasets for each client in this example
 LENS_PER_ITERATION = {
     client_name: len_per_iteration for client_name in client_names}
 
@@ -56,12 +55,10 @@ assert (SUBTRACT_DP_NOISE == False or (
 # Add DP noise to intercepts (for Logistic Regression example)
 INTERCEPTS_DP_NOISE = False
 # DP_ALGORITHM: either Laplace or Gamma. Can easily add more in client agent's code
-
 DP_ALGORITHM = "Gamma"
 
 # DP Privacy Parameters
-# smaller epsilon --> more noise/less accuracy
-epsilon = 1.0
+epsilon = 1.0  # smaller epsilon --> more noise/less accuracy
 # can make each client's epsilon different if desired
 EPSILONS = {client_name: epsilon for client_name in client_names}
 alpha = 1

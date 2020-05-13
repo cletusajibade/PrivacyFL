@@ -13,6 +13,7 @@ import warnings
 import datetime
 import config
 import numpy as np
+import fileinput
 
 from initializer import Initializer
 
@@ -23,6 +24,7 @@ class Ui_MainWindow(object):
     dpAlgo = ['Gamma', 'Laplace']
 
     def setupUi(self, MainWindow):
+        # Main window
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1000, 700)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -33,21 +35,29 @@ class Ui_MainWindow(object):
         self.simOutput.setObjectName("simOutput")
         self.horizontalLayout.addWidget(self.simOutput)
         MainWindow.setCentralWidget(self.centralwidget)
+
+        # Menu bar
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 22))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
         MainWindow.setMenuBar(self.menubar)
+
+        # Status bar
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
+        # DockWidget
         self.dockWidget = QtWidgets.QDockWidget(MainWindow)
         self.dockWidget.setObjectName("dockWidget")
         self.dockWidgetContents = QtWidgets.QWidget()
         self.dockWidgetContents.setObjectName("dockWidgetContents")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.dockWidgetContents)
         self.verticalLayout.setObjectName("verticalLayout")
+
+        # Group box
         self.groupBox = QtWidgets.QGroupBox(self.dockWidgetContents)
         self.groupBox.setObjectName("groupBox")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.groupBox)
@@ -93,10 +103,10 @@ class Ui_MainWindow(object):
         self.label_4.setObjectName("label_4")
         self.formLayout_2.setWidget(
             3, QtWidgets.QFormLayout.LabelRole, self.label_4)
-        self.lenPerIteraration = QtWidgets.QLineEdit(self.frame)
-        self.lenPerIteraration.setObjectName("lenPerIteraration")
+        self.lenPerIteration = QtWidgets.QLineEdit(self.frame)
+        self.lenPerIteration.setObjectName("lenPerIteration")
         self.formLayout_2.setWidget(
-            3, QtWidgets.QFormLayout.FieldRole, self.lenPerIteraration)
+            3, QtWidgets.QFormLayout.FieldRole, self.lenPerIteration)
         self.label_5 = QtWidgets.QLabel(self.frame)
         self.label_5.setObjectName("label_5")
         self.formLayout_2.setWidget(
@@ -121,6 +131,8 @@ class Ui_MainWindow(object):
         self.label_10.setObjectName("label_10")
         self.formLayout.setWidget(
             0, QtWidgets.QFormLayout.LabelRole, self.label_10)
+
+        # Use privacy policy
         self.useDpPrivacy = QtWidgets.QComboBox(self.groupBox_3)
         self.useDpPrivacy.addItems(self.pdList)
         self.useDpPrivacy.setCurrentIndex(1)
@@ -131,6 +143,8 @@ class Ui_MainWindow(object):
         self.label_6.setObjectName("label_6")
         self.formLayout.setWidget(
             1, QtWidgets.QFormLayout.LabelRole, self.label_6)
+
+        # privacyAlgo
         self.privacyAlgo = QtWidgets.QComboBox(self.groupBox_3)
         self.privacyAlgo.addItems(self.dpAlgo)
         self.privacyAlgo.setCurrentIndex(0)
@@ -176,6 +190,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.frame_2)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.saveParams = QtWidgets.QPushButton(self.frame_2)
+        self.saveParams.clicked.connect(self.saveAppParams)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -235,7 +250,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "PrivacyFL v2.0"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.groupBox.setTitle(_translate("MainWindow", "SimulationParamters"))
-        self.label.setText(_translate("MainWindow", "No. of Server"))
+        self.label.setText(_translate("MainWindow", "No. of Servers"))
         self.num_server.setText(_translate(
             "MainWindow", str(config.NUM_SERVERS)))
         self.label_2.setText(_translate("MainWindow", "No. of Clients"))
@@ -245,7 +260,7 @@ class Ui_MainWindow(object):
         self.num_iterations.setText(_translate(
             "MainWindow", str(config.ITERATIONS)))
         self.label_4.setText(_translate("MainWindow", "Lenth per Iteration"))
-        self.lenPerIteraration.setText(_translate(
+        self.lenPerIteration.setText(_translate(
             "MainWindow", str(config.len_per_iteration)))
         self.label_5.setText(_translate("MainWindow", "Length of Dataset"))
         self.lengthOfDataset.setText(_translate(
@@ -258,8 +273,8 @@ class Ui_MainWindow(object):
         self.epsilon.setText(_translate("MainWindow", str(config.epsilon)))
         self.label_8.setText(_translate("MainWindow", "Alpha"))
         self.alpha.setText(_translate("MainWindow", str(config.alpha)))
-        self.label_9.setText(_translate("MainWindow", str(config.mean)))
-        self.mean.setText(_translate("MainWindow", "0"))
+        self.label_9.setText(_translate("MainWindow", "Mean"))
+        self.mean.setText(_translate("MainWindow", str(config.mean)))
         self.saveParams.setText(_translate("MainWindow", "Save Parameters"))
         self.editAllConfig.setText(_translate("MainWindow", "Edit All Config"))
         self.btnRunSim.setText(_translate("MainWindow", "Run Simulation"))
@@ -271,21 +286,112 @@ class Ui_MainWindow(object):
             _translate("MainWindow", "Exit Application"))
         self.actionExit_2.setText(_translate("MainWindow", "Exit"))
 
-    def runSim(sef):
+    def runSim(self):
+        numServer = int(self.num_server.text())
+        numIterations = int(self.num_iterations.text())
+        numClient = int(self.num_client.text())
+
         random.seed(0)
         np.random.seed(0)
-        initializer = Initializer(num_clients=config.NUM_CLIENTS, iterations=config.ITERATIONS,
-                                  num_servers=config.NUM_SERVERS)
+        initializer = Initializer(num_clients=numServer, iterations=numIterations,
+                                  num_servers=numClient)
         # can use any amount of iterations less than config.ITERATIONS but the
         #  initializer has only given each client config.ITERATIONS datasets for training.
         a = datetime.datetime.now()
-        initializer.run_simulation(config.ITERATIONS,
+        initializer.run_simulation(numIterations,
                                    server_agent_name='server_agent0')
         b = datetime.datetime.now()
+
+    def saveAppParams(self):
+        numServer = int(self.num_server.text())
+        numIterations = int(self.num_iterations.text())
+        numClient = int(self.num_client.text())
+        lenPerIteration = int(self.lenPerIteration.text())
+        lengthOfDataset = int(self.lengthOfDataset.text())
+        epsilon = float(self.epsilon.text())
+        alpha = int(self.alpha.text())
+        mean = int(self.mean.text())
+        useDpPrivacy = self.useDpPrivacy.currentText()
+        privacy_algo = self.privacyAlgo.currentText()
+
+        for line in fileinput.input("config.py", inplace=True):
+            if 'NUM_CLIENTS' in line:
+                if line.split()[0] == 'NUM_CLIENTS':
+                    print('{} {}'.format('NUM_CLIENTS =',
+                                         str(numClient)+'\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            elif 'NUM_SERVERS' in line:
+                if line.split()[0] == 'NUM_SERVERS':
+                    print('{} {}'.format('NUM_SERVERS =',
+                                         str(numServer)+'\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            elif 'ITERATIONS' in line:
+                if line.split()[0] == 'ITERATIONS':
+                    print('{} {}'.format('ITERATIONS =',
+                                         str(numIterations)+'\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            elif 'len_per_iteration' in line:
+                if line.split()[0] == 'len_per_iteration':
+                    print('{} {}'.format('len_per_iteration =',
+                                         str(lenPerIteration)+'\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            elif 'LEN_TEST' in line:
+                if line.split()[0] == 'LEN_TEST':
+                    print('{} {}'.format('LEN_TEST =',
+                                         str(lengthOfDataset)+'\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            elif 'epsilon' in line:
+                if line.split()[0] == 'epsilon':
+                    print('{} {}'.format('epsilon =',
+                                         str(epsilon)+'\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            elif 'alpha' in line:
+                if line.split()[0] == 'alpha':
+                    print('{} {}'.format('alpha =',
+                                         str(alpha)+'\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            elif 'mean' in line:
+                if line.split()[0] == 'mean':
+                    print('{} {}'.format('mean =',
+                                         str(mean)+'\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            elif 'DP_ALGORITHM' in line:
+                if line.split()[0] == 'DP_ALGORITHM':
+                    print('{}'.format(
+                        'DP_ALGORITHM = "'+privacy_algo+'"\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            elif 'USE_DP_PRIVACY' in line:
+                if line.split()[0] == 'USE_DP_PRIVACY':
+                    print('{} {}'.format('USE_DP_PRIVACY =',
+                                         useDpPrivacy+'\n'), end='')
+                else:
+                    print('{}'.format(line), end='')
+
+            else:
+                print('{}'.format(line), end='')
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
