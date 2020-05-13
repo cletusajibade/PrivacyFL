@@ -1,3 +1,5 @@
+from PyQt5.QtWidgets import *
+
 import config
 import datetime
 import numpy as np
@@ -17,7 +19,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 class Initializer:
-    def __init__(self, num_clients, num_servers, iterations, method):
+    def __init__(self, num_clients, num_servers, iterations, method, simulation_output_view):
         """
         Offline stage of simulation. Initializes clients and servers for iteration as well as gives each client its data.
         :param num_clients: number of clients to be use for simulation
@@ -53,15 +55,21 @@ class Initializer:
         # print_config(len_per_iteration=config.LEN_PER_ITERATION)
         print('\n \n \nSTARTING SIMULATION \n \n \n')
 
+        simulation_output_view.appendPlainText('\n \n \n =========== FEDERATED LEARNING v2.0 =========== \n')
+        simulation_output_view.appendPlainText('===========STARTING SIMULATION =========== \n \n \n')
+
         active_clients = {'client_agent' + str(i) for i in range(num_clients)}
         self.clients = {
             'client_agent' + str(i): ClientAgent(agent_number=i,
                                                  train_datasets=client_to_datasets['client_agent' + str(i)],
                                                  evaluator=ModelEvaluator(X_test, y_test, method),
-                                                 active_clients=active_clients) for i in range(num_clients)}
+                                                 active_clients=active_clients,
+                                                 simulation_output_view=simulation_output_view) for i in
+            range(num_clients)}
 
-        self.server_agents = {'server_agent' + str(i): ServerAgent(agent_number=i) for i in
-                              range(num_servers)}  # initialize servers
+        self.server_agents = {
+            'server_agent' + str(i): ServerAgent(agent_number=i, simulation_output_view=simulation_output_view) for i in
+            range(num_servers)}  # initialize servers
 
         # create directory with mappings from names to instances
         self.directory = Directory(clients=self.clients, server_agents=self.server_agents)
@@ -92,16 +100,21 @@ class Initializer:
                     'Diffie-helman key exchange simulated duration: {}\nDiffie-helman key exchange real run-time: {}\n'.format(
                         simulated_time, key_exchange_duration))
 
+                simulation_output_view. \
+                    appendPlainText('Diffie-helman key exchange simulated duration: {}\nDiffie-helman key '
+                                    'exchange real run-time: {}\n'.format(simulated_time, key_exchange_duration))
+
             for client_name, client in self.clients.items():
                 client.initialize_common_keys()
 
-    def run_simulation(self, num_iterations, server_agent_name='server_agent0'):
+    def run_simulation(self, num_iterations, simulation_output_view, server_agent_name='server_agent0'):
         """
         Online stage of simulation.
+        :param simulation_output_view: ui view of simulation
         :param num_iterations: number of iterations to run
         :param server_agent_name: which server to use. Defaults to first server.
         """
         # ONLINE
         server_agent = self.directory.server_agents[server_agent_name]
         server_agent.request_values(num_iterations=num_iterations)
-        server_agent.final_statistics()
+        server_agent.final_statistics(simulation_output_view)

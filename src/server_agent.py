@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('..')
 
 import numpy as np
@@ -9,6 +10,7 @@ from multiprocessing.pool import ThreadPool
 from utils.latency_helper import find_slowest_time
 from agent import Agent
 from message import Message
+
 
 def client_computation_caller(inp):
     client_instance, message = inp
@@ -31,10 +33,11 @@ def client_agent_dropout_caller(inp):
 class ServerAgent(Agent):
     """ Server agent that averages (federated) weights and returns them to clients"""
 
-    def __init__(self, agent_number):
+    def __init__(self, agent_number, simulation_output_view):
         super(ServerAgent, self).__init__(agent_number=agent_number, agent_type='server_agent')
         self.averaged_weights = {}
         self.averaged_intercepts = {}
+        self.simulation_output_view = simulation_output_view
 
     def request_values(self, num_iterations):
         """
@@ -45,7 +48,7 @@ class ServerAgent(Agent):
         converged = {}  # maps client names to iteration of convergence. Contains all inactive clients
         active_clients = set(self.directory.clients.keys())
 
-        for i in range(1, num_iterations+1):
+        for i in range(1, num_iterations + 1):
             weights = {}
             intercepts = {}
 
@@ -55,7 +58,7 @@ class ServerAgent(Agent):
                 args = []
                 for client_name in active_clients:
                     client_instance = self.directory.clients[client_name]
-                    body = {'iteration': i, 'lock': lock, 'simulated_time':config.LATENCY_DICT[self.name][client_name]}
+                    body = {'iteration': i, 'lock': lock, 'simulated_time': config.LATENCY_DICT[self.name][client_name]}
                     arg = Message(sender_name=self.name, recipient_name=client_name, body=body)
                     args.append((client_instance, arg))
                 messages = calling_pool.map(client_computation_caller, args)
@@ -71,7 +74,7 @@ class ServerAgent(Agent):
                 weights[client_name] = np.array(client_weights)
                 intercepts[client_name] = np.array(client_intercepts)
 
-            weights_np = list(weights.values()) # the weights for this iteration!
+            weights_np = list(weights.values())  # the weights for this iteration!
             intercepts_np = list(intercepts.values())
 
             try:
@@ -115,18 +118,19 @@ class ServerAgent(Agent):
             if config.CLIENT_DROPOUT:
                 # tell the clients which other clients have dropped out
                 active_clients -= clients_to_remove
-                if len(active_clients) < 2: # no point in continuing if don't have at least 2 clients
+                if len(active_clients) < 2:  # no point in continuing if don't have at least 2 clients
                     self.print_convergences(converged)
                     return
                 with ThreadPool(len(active_clients)) as calling_pool:
                     args = []
                     for client_name in active_clients:
                         client_instance = self.directory.clients[client_name]
-                        body = {'clients_to_remove': clients_to_remove, 'simulated_time': simulated_time + config.LATENCY_DICT[self.name][client_name], 'iteration':i}
+                        body = {'clients_to_remove': clients_to_remove,
+                                'simulated_time': simulated_time + config.LATENCY_DICT[self.name][client_name],
+                                'iteration': i}
                         message = Message(sender_name=self.name, recipient_name=client_name, body=body)
                         args.append((client_instance, message))
                     __ = calling_pool.map(client_agent_dropout_caller, args)
-
 
         # at end of all iterations
         self.print_convergences(converged)
@@ -141,10 +145,15 @@ class ServerAgent(Agent):
         for client_name in self.directory.clients.keys():
             if client_name in converged:
                 print('Client {} converged on iteration {}'.format(client_name, converged[client_name]))
+                self.simulation_output_view.appendPlainText(
+                    'Client {} converged on iteration {}'.format(client_name, converged[client_name]))
             if client_name not in converged:
                 print('Client {} never converged'.format(client_name))
+                self.simulation_output_view.appendPlainText('Client {} never converged'.format(client_name))
 
-    def final_statistics(self):
+        self.simulation_output_view.appendPlainText('\n')
+
+    def final_statistics(self, simulation_output_view):
         """
         USED FOR RESEARCH PURPOSES.
         """
@@ -157,9 +166,13 @@ class ServerAgent(Agent):
 
         if config.CLIENT_DROPOUT:
             print('Federated accuracies are {}'.format(dict(zip(self.directory.clients, fed_acc))))
+            simulation_output_view.appendPlainText(
+                'Federated accuracies are {}'.format(dict(zip(self.directory.clients, fed_acc))))
         else:
             client_accs = list(np.mean(client_accs, axis=0))
             fed_acc = list(np.mean(fed_acc, axis=0))
             print('Personal accuracy on final iteration is {}'.format(client_accs))
             print('Federated accuracy on final iteration is {}'.format(fed_acc))  # should all be the same if no dropout
 
+            simulation_output_view.appendPlainText('Personal accuracy on final iteration is {}'.format(client_accs))
+            simulation_output_view.appendPlainText('Federated accuracy on final iteration is {}'.format(fed_acc))

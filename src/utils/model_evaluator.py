@@ -3,6 +3,7 @@ from sklearn.svm import SVC
 from sklearn.linear_model import SGDRegressor
 from sklearn.neural_network import MLPClassifier
 
+
 class ModelEvaluator:
     """
     Used to evaluate weights on test dataset. Evaluation is performed with sklearn due to difficulties of

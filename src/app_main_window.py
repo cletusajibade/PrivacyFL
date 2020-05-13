@@ -26,9 +26,9 @@ class AppMainWindow(QMainWindow):
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.simOutput = QPlainTextEdit(self.centralwidget)
-        self.simOutput.setObjectName("simOutput")
-        self.horizontalLayout.addWidget(self.simOutput)
+        self.simulation_output = QPlainTextEdit(self.centralwidget)
+        self.simulation_output.setObjectName("simulation_output")
+        self.horizontalLayout.addWidget(self.simulation_output)
         self.setCentralWidget(self.centralwidget)
 
         # Menu bar
@@ -249,11 +249,12 @@ class AppMainWindow(QMainWindow):
         random.seed(0)
         np.random.seed(0)
         initializer = Initializer(num_clients=config.NUM_CLIENTS, iterations=config.ITERATIONS,
-                                  num_servers=config.NUM_SERVERS, method = config.METHOD)
+                                  num_servers=config.NUM_SERVERS, method=config.METHOD,
+                                  simulation_output_view=self.simulation_output)
         # can use any amount of iterations less than config.ITERATIONS but the
         # initializer has only given each client config.ITERATIONS datasets for training.
         a = datetime.datetime.now()
-        initializer.run_simulation(config.ITERATIONS, server_agent_name='server_agent0')
+        initializer.run_simulation(config.ITERATIONS, self.simulation_output, server_agent_name='server_agent0')
         b = datetime.datetime.now()
 
     def save_app_config(self):

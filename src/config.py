@@ -16,7 +16,7 @@ https://arxiv.org/abs/2002.08423
 
 """Simulation Parameters"""
 
-NUM_CLIENTS = 3
+NUM_CLIENTS = 5
 client_names = ['client_agent' + str(i) for i in range(NUM_CLIENTS)]
 # NUM_SERVERS: More than one server will require additional coding to specify each server's behavior in the simulation
 NUM_SERVERS = 1
