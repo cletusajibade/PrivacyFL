@@ -17,7 +17,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 class Initializer:
-    def __init__(self, num_clients, num_servers, iterations):
+    def __init__(self, num_clients, num_servers, iterations, method):
         """
         Offline stage of simulation. Initializes clients and servers for iteration as well as gives each client its data.
         :param num_clients: number of clients to be use for simulation
@@ -57,9 +57,9 @@ class Initializer:
         self.clients = {
             'client_agent' + str(i): ClientAgent(agent_number=i,
                                                  train_datasets=client_to_datasets['client_agent' + str(i)],
-                                                 evaluator=ModelEvaluator(X_test, y_test),
-                                                 active_clients=active_clients) for i in range(num_clients)
-        }
+                                                 evaluator=ModelEvaluator(X_test, y_test, method),
+                                                 active_clients=active_clients) for i in range(num_clients)}
+
         self.server_agents = {'server_agent' + str(i): ServerAgent(agent_number=i) for i in
                               range(num_servers)}  # initialize servers
 

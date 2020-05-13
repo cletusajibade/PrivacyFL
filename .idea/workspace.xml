@@ -20,11 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="65a03bce-a20d-45a4-a01e-b7d03a6eb176" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app_main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/app_main_window.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config_BKP.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/initializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/initializer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/model_evaluator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/model_evaluator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +57,7 @@
       <updated>1582763489020</updated>
       <workItem from="1589377875830" duration="3333000" />
       <workItem from="1589381597055" duration="1571000" />
-      <workItem from="1589399638659" duration="1473000" />
+      <workItem from="1589399638659" duration="2462000" />
     </task>
     <servers />
   </component>
@@ -81,6 +81,10 @@
       <screen x="0" y="23" width="1440" height="797" />
     </state>
     <state x="508" y="183" key="FileChooserDialogImpl/0.23.1440.797@0.23.1440.797" timestamp="1589377974620" />
+    <state x="608" y="324" key="MultipleFileMergeDialog" timestamp="1589402141297">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="608" y="324" key="MultipleFileMergeDialog/0.0.1440.900@0.0.1440.900" timestamp="1589402141297" />
     <state x="418" y="82" width="604" height="735" key="find.popup" timestamp="1589400804684">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
