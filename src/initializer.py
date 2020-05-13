@@ -47,9 +47,10 @@ class Initializer:
         y_train = y_train[:number_of_samples]
 
         client_to_datasets = data_formatting.partition_data(X_train, y_train, config.client_names, iterations,
-                                                            config.LENS_PER_ITERATION, cumulative=config.USING_CUMULATIVE)
+                                                            config.LENS_PER_ITERATION,
+                                                            cumulative=config.USING_CUMULATIVE)
 
-        #print_config(len_per_iteration=config.LEN_PER_ITERATION)
+        # print_config(len_per_iteration=config.LEN_PER_ITERATION)
         print('\n \n \nSTARTING SIMULATION \n \n \n')
 
         active_clients = {'client_agent' + str(i) for i in range(num_clients)}
@@ -57,9 +58,8 @@ class Initializer:
             'client_agent' + str(i): ClientAgent(agent_number=i,
                                                  train_datasets=client_to_datasets['client_agent' + str(i)],
                                                  evaluator=ModelEvaluator(X_test, y_test),
-                                                 active_clients=active_clients) for i in
-            range(num_clients)}  # initialize the agents
-
+                                                 active_clients=active_clients) for i in range(num_clients)
+        }
         self.server_agents = {'server_agent' + str(i): ServerAgent(agent_number=i) for i in
                               range(num_servers)}  # initialize servers
 
@@ -105,4 +105,3 @@ class Initializer:
         server_agent = self.directory.server_agents[server_agent_name]
         server_agent.request_values(num_iterations=num_iterations)
         server_agent.final_statistics()
-
