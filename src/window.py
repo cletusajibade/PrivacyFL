@@ -160,7 +160,6 @@ class AppMainWindow(QMainWindow):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.btnSaveParams = QPushButton(self.frame_2)
         self.btnSaveParams.clicked.connect(self.save_app_config)
-        self.btnSaveParams.clicked()
         sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
