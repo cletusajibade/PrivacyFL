@@ -34,6 +34,10 @@ LEN_TEST = 300
 
 VERBOSITY = 1  # 1 to print out the result of each iteration
 
+"""Machine Learning algorithm"""
+ALGO = {'log_reg':'Logistic Regression', 'perceptron': 'Perceptron', 'mlp': 'Multi Layer Perceptron'}
+METHOD = 'mlp'
+
 """Dataset Formatting"""
 # When set to True, simulation uses cumulative datasets (i.e., each iteration includes the last), which also affects the way
 # training is done. With cumulative datasets, each iteration each client trains on its dataset from scratch.
