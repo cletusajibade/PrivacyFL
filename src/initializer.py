@@ -55,8 +55,10 @@ class Initializer:
         # print_config(len_per_iteration=config.LEN_PER_ITERATION)
         print('\n \n \nSTARTING SIMULATION \n \n \n')
 
-        simulation_output_view.appendPlainText('\n \n \n =========== FEDERATED LEARNING v2.0 =========== \n')
-        simulation_output_view.appendPlainText('===========STARTING SIMULATION =========== \n \n \n')
+        simulation_output_view.appendPlainText('\n \n \n========== FEDERATED LEARNING v2.0 ========')
+        simulation_output_view.appendPlainText('========== STARTING SIMULATION =========== \n \n \n')
+
+        print('num_clients:',num_clients)
 
         active_clients = {'client_agent' + str(i) for i in range(num_clients)}
         self.clients = {
