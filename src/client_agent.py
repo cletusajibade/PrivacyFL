@@ -15,11 +15,13 @@ import utils.diffie_hellman as dh
 
 from sklearn.linear_model import SGDClassifier
 
+import app_main_window
 
 simplefilter(action='ignore', category=FutureWarning)
 
+
 class ClientAgent(Agent):
-    def __init__(self, agent_number, train_datasets, evaluator, active_clients):
+    def __init__(self, agent_number, train_datasets, evaluator, active_clients, simulation_output_view):
         """
         Initializes an instance of client agent
 
@@ -33,6 +35,7 @@ class ClientAgent(Agent):
         """
         super(ClientAgent, self).__init__(agent_number=agent_number, agent_type="client_agent")
 
+        self.simulation_output_view = simulation_output_view
         self.train_datasets = train_datasets
         self.evaluator = evaluator
         self.active_clients = active_clients
@@ -140,7 +143,7 @@ class ClientAgent(Agent):
                 'Not enough data to support a {}th iteration. Either change iteration data length in config.py or decrease amount of iterations.'.format(
                     iteration)))
 
-        if config.USING_CUMULATIVE: # choosing between algorithms
+        if config.USING_CUMULATIVE:  # choosing between algorithms
             # compute weights from scratch
             weights, intercepts = self.compute_weights_noncumulative(iteration)
         else:
@@ -322,7 +325,7 @@ class ClientAgent(Agent):
 
                 seed_b = seed_b[20:]
                 seed = int(seed_b, 2)
-                random.seed(seed) # generate new seed
+                random.seed(seed)  # generate new seed
                 seed = random.randint(-sys.maxsize, sys.maxsize)
                 self.seeds[agent] = seed
                 self.deltas[agent] = delta
@@ -368,15 +371,21 @@ class ClientAgent(Agent):
                            'Personal accuracy: {} \n' \
                            'Federated accuracy: {} \n' \
 
+        # self.simulation_output_view.appendPlainText(iteration_report)
+
         if config.SIMULATE_LATENCIES:
             args.append(self.computation_times[iteration])
             iteration_report += 'Personal computation time: {} \n'
+            # self.simulation_output_view.appendPlainText(iteration_report)
 
             args.append(simulated_time)
             iteration_report += 'Simulated time to receive federated weights: {} \n \n'
+            # self.simulation_output_view.appendPlainText(iteration_report)
 
         if config.VERBOSITY:
             print(iteration_report.format(*args))
+            self.simulation_output_view.appendPlainText(iteration_report.format(*args))
+            # app_main_window.AppMainWindow
 
         msg = Message(sender_name=self.name, recipient_name=self.directory.server_agents,
                       body={'converged': converged,
@@ -414,6 +423,8 @@ class ClientAgent(Agent):
             'iteration']
 
         print('Simulated time for client {} to finish iteration {}: {}\n'.format(self.name, iteration, simulated_time))
+        self.simulation_output_view.appendPlainText(
+            'Simulated time for client {} to finish iteration {}: {}\n'.format(self.name, iteration, simulated_time))
 
         self.active_clients -= clients_to_remove
         return None

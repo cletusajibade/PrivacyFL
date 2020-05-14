@@ -18,6 +18,7 @@ class AppMainWindow(QMainWindow):
 
         self.pdList = ['True', 'False']
         self.dpAlgo = ['Gamma', 'Laplace']
+        # self.algo_select = ['Logistic Regression', 'perceptron': 'Perceptron', 'mlp': 'Multi Layer Perceptron']
 
         self.setObjectName("MainWindow")
         self.resize(1000, 700)
@@ -26,9 +27,9 @@ class AppMainWindow(QMainWindow):
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.simOutput = QPlainTextEdit(self.centralwidget)
-        self.simOutput.setObjectName("simOutput")
-        self.horizontalLayout.addWidget(self.simOutput)
+        self.simulation_output = QPlainTextEdit(self.centralwidget)
+        self.simulation_output.setObjectName("simulation_output")
+        self.horizontalLayout.addWidget(self.simulation_output)
         self.setCentralWidget(self.centralwidget)
 
         # Menu bar
@@ -57,6 +58,7 @@ class AppMainWindow(QMainWindow):
         self.groupBox.setObjectName("groupBox")
         self.verticalLayout_2 = QVBoxLayout(self.groupBox)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
+
         self.frame = QFrame(self.groupBox)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -66,38 +68,53 @@ class AppMainWindow(QMainWindow):
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
         self.frame.setObjectName("frame")
+
         self.formLayout_2 = QFormLayout(self.frame)
         self.formLayout_2.setObjectName("formLayout_2")
+
         self.label = QLabel(self.frame)
         self.label.setObjectName("label")
         self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.label)
         self.num_server = QLineEdit(self.frame)
         self.num_server.setObjectName("num_server")
         self.formLayout_2.setWidget(0, QFormLayout.FieldRole, self.num_server)
+
         self.label_2 = QLabel(self.frame)
         self.label_2.setObjectName("label_2")
         self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.label_2)
         self.num_client = QLineEdit(self.frame)
         self.num_client.setObjectName("num_client")
         self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.num_client)
+
         self.label_3 = QLabel(self.frame)
         self.label_3.setObjectName("label_3")
         self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_3)
         self.num_iterations = QLineEdit(self.frame)
         self.num_iterations.setObjectName("num_iterations")
         self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.num_iterations)
+
         self.label_4 = QLabel(self.frame)
         self.label_4.setObjectName("label_4")
         self.formLayout_2.setWidget(3, QFormLayout.LabelRole, self.label_4)
         self.lenPerIteration = QLineEdit(self.frame)
         self.lenPerIteration.setObjectName("lenPerIteration")
         self.formLayout_2.setWidget(3, QFormLayout.FieldRole, self.lenPerIteration)
+
         self.label_5 = QLabel(self.frame)
         self.label_5.setObjectName("label_5")
         self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.label_5)
         self.lengthOfDataset = QLineEdit(self.frame)
         self.lengthOfDataset.setObjectName("lengthOfDataset")
         self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.lengthOfDataset)
+
+        self.label_ml_algo = QLabel(self.frame)
+        self.label_ml_algo.setObjectName("label_ml_algo")
+        self.formLayout_2.setWidget(5, QFormLayout.LabelRole, self.label_ml_algo)
+        self.selectMLAlgorithm = QComboBox(self.frame)
+        self.selectMLAlgorithm.setObjectName("selectMLAlgorithm")
+        self.selectMLAlgorithm.addItems(config.ALGO.values())
+        self.formLayout_2.setWidget(5, QFormLayout.FieldRole, self.selectMLAlgorithm)
+
         self.verticalLayout_2.addWidget(self.frame)
         self.groupBox_3 = QGroupBox(self.groupBox)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -169,9 +186,10 @@ class AppMainWindow(QMainWindow):
         self.horizontalLayout_3.addWidget(self.btnSaveParams)
 
         # Button Edit All Config
-        self.btnEditAllConfig = QPushButton(self.frame_2)
-        self.btnEditAllConfig.setObjectName("btnEditAllConfig")
-        self.horizontalLayout_3.addWidget(self.btnEditAllConfig)
+        # self.btnEditAllConfig = QPushButton(self.frame_2)
+        # self.btnEditAllConfig.setObjectName("btnEditAllConfig")
+        # self.horizontalLayout_3.addWidget(self.btnEditAllConfig)
+
         self.verticalLayout_2.addWidget(self.frame_2)
         self.verticalLayout.addWidget(self.groupBox)
         self.groupBox_2 = QGroupBox(self.dockWidgetContents)
@@ -226,6 +244,7 @@ class AppMainWindow(QMainWindow):
         self.label_4.setText("Lenth per Iteration")
         self.lenPerIteration.setText(str(config.len_per_iteration))
         self.label_5.setText("Length of Dataset")
+        self.label_ml_algo.setText("Select ML Algorithm")
         self.lengthOfDataset.setText(str(config.LEN_TEST))
         self.groupBox_3.setTitle("Privacy Parameters")
         self.label_10.setText("Use DP Privacy")
@@ -237,7 +256,7 @@ class AppMainWindow(QMainWindow):
         self.label_9.setText("Mean")
         self.mean.setText(str(config.mean))
         self.btnSaveParams.setText("Save Parameters")
-        self.btnEditAllConfig.setText("Edit All Config")
+        # self.btnEditAllConfig.setText("Edit All Config")
         self.btnRunSim.setText("Run Simulation")
         self.btnStopSim.setText("Stop Simulation")
         self.actionRun_Simulation.setText("Run Simulation")
@@ -246,14 +265,28 @@ class AppMainWindow(QMainWindow):
         self.actionExit_2.setText("Exit")
 
     def run_simulation(self):
+
+        num_client = int(self.num_client.text())
+        num_severs = int(self.num_server.text())
+        iterations = int(self.num_iterations.text())
+        ml_algo_index = self.selectMLAlgorithm.currentIndex()
+        method = 'log_reg'  # default
+        if ml_algo_index == 0:
+            method = 'log_reg'
+        elif ml_algo_index == 1:
+            method = 'perceptron'
+        else:
+            method = 'mlp'
+
         random.seed(0)
         np.random.seed(0)
-        initializer = Initializer(num_clients=config.NUM_CLIENTS, iterations=config.ITERATIONS,
-                                  num_servers=config.NUM_SERVERS)
+        initializer = Initializer(num_clients=num_client, iterations=iterations,
+                                  num_servers=num_severs, method=method,
+                                  simulation_output_view=self.simulation_output)
         # can use any amount of iterations less than config.ITERATIONS but the
         # initializer has only given each client config.ITERATIONS datasets for training.
         a = datetime.datetime.now()
-        initializer.run_simulation(config.ITERATIONS, server_agent_name='server_agent0')
+        initializer.run_simulation(iterations, self.simulation_output, server_agent_name='server_agent0')
         b = datetime.datetime.now()
 
     def save_app_config(self):
